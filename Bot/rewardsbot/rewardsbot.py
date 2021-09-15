@@ -1,8 +1,8 @@
 import rewardsbot.constants as const
-import rewardsbot.util as util
 
 from selenium import webdriver
 from rewardsbot.signin import SignIn
+from rewardsbot.dailysearch import DailySearch
 
 
 class RewardsBot(webdriver.Chrome):
@@ -28,3 +28,8 @@ class RewardsBot(webdriver.Chrome):
         bot_sign_in.enter_email(account[0])
         bot_sign_in.enter_password(account[1])
         bot_sign_in.stay_signed_in('no')
+
+    def do_daily_search(self):
+        bot_daily_search = DailySearch(self)
+        bot_daily_search.fill_input()
+        bot_daily_search.search()
