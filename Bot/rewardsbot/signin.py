@@ -27,14 +27,14 @@ class SignIn:
 
     def multiple_accounts_block(self):
         try:
-            WebDriverWait(self.driver, 5).until(
+            WebDriverWait(self.driver, 3).until(
                 EC.visibility_of_element_located(
                     (By.ID, 'lightbox')
                 )
             )
 
             util.wait_random()
-            personal = WebDriverWait(self.driver, 10).until(
+            personal = WebDriverWait(self.driver, 3).until(
                 EC.element_to_be_clickable(
                     (By.ID, 'msaTile')
                 )

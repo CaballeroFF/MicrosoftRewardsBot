@@ -15,7 +15,7 @@ class DailySet:
     def open_drawer(self):
         util.wait(3)
 
-        drawer = WebDriverWait(self.driver, 20).until(
+        drawer = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, '#id_rh')
             )
@@ -27,14 +27,14 @@ class DailySet:
         self.open_drawer()
 
         print('attempting to grab element')
-        WebDriverWait(self.driver, 20).until(
+        WebDriverWait(self.driver, 10).until(
             EC.frame_to_be_available_and_switch_to_it(
                 (By.ID, 'bepfm')
             )
         )
 
         try:
-            article = WebDriverWait(self.driver, 20).until(
+            article = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     (By.CSS_SELECTOR, f'.mfo_c_ds > .promo_cont:nth-child({n})')
                 )
@@ -50,40 +50,48 @@ class DailySet:
 
     def start_quiz(self):
         try:
-            quiz_button = WebDriverWait(self.driver, 20).until(
+            quiz_button = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     (By.CSS_SELECTOR, '#rqStartQuiz')
                 ), "can't get quiz"
             )
             quiz_button.click()
         except Exception as e:
-            print(e)
+            print('could not open quiz', e)
 
     def close_quiz(self):
-        close = WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.ID, 'rqCloseBtn')), "can't get close button")
-        close.click()
+        try:
+            close = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID, 'rqCloseBtn')), "can't get close button")
+            close.click()
+        except Exception as e:
+            print('could not close quiz', e)
 
     def generic_quiz(self):
         self.start_quiz()
 
-        WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.ID, 'rqHeaderCredits')), "can't get questions")
-        question_count = self.driver.find_elements_by_css_selector('#rqHeaderCredits span')
+        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, 'rqHeaderCredits')), "can't get questions")
+        question_count = self.driver.find_elements_by_css_selector('#rqHeaderCredits span.emptyCircle')
 
-        for _ in range(len(question_count)):
-            util.wait(3.5)
+        for _ in range(len(question_count)+1):
+            WebDriverWait(self.driver, 10).until(
+                EC.invisibility_of_element_located(
+                    (By.ID, 'rqAnsStatus')
+                ), "hint not found"
+            )
+            print('hint hidden')
+
+            util.wait(1.5)
             print('starting question')
-            # WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((By.ID, 'rqHeaderCredits')))
-            WebDriverWait(self.driver, 20).until(
+            WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_element_located(
                     (By.ID, 'currentQuestionContainer')
                 ), "can't get answers"
             )
             util.wait_random()
             answers = self.driver.find_elements_by_class_name('rq_button')
-            index = random.randint(0, len(answers)-1)
-            print('clicking answer', index+1)
-            # random.choice(answers).click()
-            answers[index].click()
+            print('clicking answer')
+            random.choice(answers).click()
+            util.wait_random()
 
     def daily_article(self):
         self.open_nth_promo(1)
