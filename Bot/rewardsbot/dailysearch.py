@@ -44,9 +44,10 @@ class DailySearch:
         current = ''.join([i for i in div[0].split() if i.isdigit()])
         total = ''.join([i for i in div[1].split() if i.isdigit()])
         self.complete = int(current) == int(total)
-        self.count = int(total) // 5
+        self.count = (int(total) - int(current)) // 5
 
         util.wait(2)
+        print("switching to default frame")
         self.driver.switch_to.default_content()
         util.wait(2)
 

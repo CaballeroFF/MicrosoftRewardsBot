@@ -13,4 +13,4 @@ def wait(delay):
 
 
 def wait_random():
-    wait(random.uniform(.5, 2))
+    wait(random.uniform(.9, 2.4))

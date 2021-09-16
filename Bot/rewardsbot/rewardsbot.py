@@ -13,7 +13,7 @@ class RewardsBot(webdriver.Chrome):
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("detach", True)
         super(RewardsBot, self).__init__(executable_path=self.driver_path, options=chrome_options)
-        self.implicitly_wait(10)
+        self.implicitly_wait(7)
         self.maximize_window()
 
     def __exit__(self, exc_type, exc_val, exc_tb):

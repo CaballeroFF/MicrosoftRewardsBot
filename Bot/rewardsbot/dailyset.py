@@ -1,6 +1,6 @@
 import rewardsbot.util as util
-import random
 
+from rewardsbot.quizsolver import QuizSolver
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -10,12 +10,13 @@ from selenium.webdriver.common.by import By
 class DailySet:
     def __init__(self, driver:WebDriver):
         self.driver = driver
+        self.quiz_solver = QuizSolver(self.driver)
         self.complete = False
 
     def open_drawer(self):
         util.wait(3)
 
-        drawer = WebDriverWait(self.driver, 10).until(
+        drawer = WebDriverWait(self.driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, '#id_rh')
             )
@@ -27,71 +28,47 @@ class DailySet:
         self.open_drawer()
 
         print('attempting to grab element')
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, 5).until(
             EC.frame_to_be_available_and_switch_to_it(
                 (By.ID, 'bepfm')
             )
         )
 
         try:
-            article = WebDriverWait(self.driver, 10).until(
+            article = WebDriverWait(self.driver, 5).until(
                 EC.element_to_be_clickable(
                     (By.CSS_SELECTOR, f'.mfo_c_ds > .promo_cont:nth-child({n})')
                 )
             )
+            title_element = article.find_element_by_css_selector('p.promo-title')
+            title = title_element.get_attribute('textContent')
+            print(title)
             article.click()
         except Exception as e:
+            title = None
             self.complete = True
             print('daily set complete', e)
 
         util.wait(2)
+        print("switching to default frame")
         self.driver.switch_to.default_content()
         util.wait(2)
+        return title
 
-    def start_quiz(self):
-        try:
-            quiz_button = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(
-                    (By.CSS_SELECTOR, '#rqStartQuiz')
-                ), "can't get quiz"
-            )
-            quiz_button.click()
-        except Exception as e:
-            print('could not open quiz', e)
+    def quiz_type(self, title):
+        if title == "This or That?":
+            self.quiz_solver.this_or_that()
+        elif title == "Supersonic quiz":
+            print("supersonic")
+        elif title == "Lightspeed quiz":
+            print("lightspeed")
 
-    def close_quiz(self):
-        try:
-            close = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID, 'rqCloseBtn')), "can't get close button")
-            close.click()
-        except Exception as e:
-            print('could not close quiz', e)
-
-    def generic_quiz(self):
-        self.start_quiz()
-
-        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID, 'rqHeaderCredits')), "can't get questions")
-        question_count = self.driver.find_elements_by_css_selector('#rqHeaderCredits span.emptyCircle')
-
-        for _ in range(len(question_count)+1):
-            WebDriverWait(self.driver, 10).until(
-                EC.invisibility_of_element_located(
-                    (By.ID, 'rqAnsStatus')
-                ), "hint not found"
-            )
-            print('hint hidden')
-
-            util.wait(1.5)
-            print('starting question')
-            WebDriverWait(self.driver, 10).until(
-                EC.visibility_of_element_located(
-                    (By.ID, 'currentQuestionContainer')
-                ), "can't get answers"
-            )
-            util.wait_random()
-            answers = self.driver.find_elements_by_class_name('rq_button')
-            print('clicking answer')
-            random.choice(answers).click()
-            util.wait_random()
+    def trivia_type(self, title):
+        if title == "Who said it":
+            print("who said it")
+        elif title == "Word for word":
+            print("word for word")
+            self.quiz_solver.word_for_word()
 
     def daily_article(self):
         self.open_nth_promo(1)
@@ -100,28 +77,24 @@ class DailySet:
         if self.complete:
             return None
 
-        self.open_nth_promo(2)
+        title = self.open_nth_promo(2)
+
         try:
-            self.lightspeed_quiz()
+            self.quiz_type(title)
         except Exception as e:
             print('could not complete quiz', e)
 
-        self.close_quiz()
-
-    def lightspeed_quiz(self):
-        self.generic_quiz()
+        self.quiz_solver.close_quiz()
 
     def daily_trivia(self):
         if self.complete:
             return None
 
-        self.open_nth_promo(3)
+        title = self.open_nth_promo(3)
+
         try:
-            self.who_said_it()
+            self.trivia_type(title)
         except Exception as e:
             print('could not complete trivia', e)
 
-        self.close_quiz()
-
-    def who_said_it(self):
-        self.generic_quiz()
+        self.quiz_solver.close_quiz()

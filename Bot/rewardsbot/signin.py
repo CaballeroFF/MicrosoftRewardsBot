@@ -44,15 +44,18 @@ class SignIn:
             print('no multiple account blocker')
 
     def enter_password(self, password):
-        self.multiple_accounts_block()
-        util.wait_random()
-        password_input = self.driver.find_element_by_css_selector('#i0118')
-        password_input.clear()
-        password_input.send_keys(password)
+        try:
+            util.wait_random()
+            password_input = self.driver.find_element_by_css_selector('#i0118')
+            password_input.clear()
+            password_input.send_keys(password)
 
-        util.wait_random()
-        submit_button = self.driver.find_element_by_css_selector('#idSIButton9')
-        submit_button.click()
+            util.wait_random()
+            submit_button = self.driver.find_element_by_css_selector('#idSIButton9')
+            submit_button.click()
+        except:
+            self.multiple_accounts_block()
+            self.enter_password(password)
 
     def stay_signed_in(self, arg):
         util.wait_random()
