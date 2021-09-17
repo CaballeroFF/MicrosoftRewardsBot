@@ -57,11 +57,14 @@ class DailySet:
 
     def quiz_type(self, title):
         if title == "This or That?":
+            print("this or that")
             self.quiz_solver.this_or_that()
         elif title == "Supersonic quiz":
             print("supersonic")
+            self.quiz_solver.supersonic_quiz()
         elif title == "Lightspeed quiz":
             print("lightspeed")
+            self.quiz_solver.lightspeed_quiz()
 
     def trivia_type(self, title):
         if title == "Who said it":
@@ -98,3 +101,8 @@ class DailySet:
             print('could not complete trivia', e)
 
         self.quiz_solver.close_quiz()
+
+    def test(self):
+        self.driver.get('https://www.bing.com/search?q=Popular%20TV%20shows&rnoreward=1&mkt=EN-US&FORM=ML12JG&skipopalnative=true&rqpiodemo=1&filters=BTEPOKey:%22REWARDSQUIZ_ENUS_ThisorThat_TVshows_ReleaseDate_20210913%22%20BTROID:%22Gamification_DailySet_20210913_Child2%22%20BTROEC:%225%22%20BTROMC:%2250%22%20BTROQN:%224%22')
+        util.wait(3)
+        self.quiz_solver.this_or_that()

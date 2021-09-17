@@ -74,83 +74,90 @@ class QuizSolver:
             )
         )
         question_count = questions_element.get_attribute('textContent')
+        count = 10 - int(question_count.split('of')[0].strip()) + 1
+        print(count, "questions to do")
 
-        for _ in range(10):
+        for _ in range(count):
             print('starting question')
 
-            util.wait(2)
+            util.wait(1)
             WebDriverWait(self.driver, const.WAIT_TIME).until(
                 EC.element_to_be_clickable(
                     (By.CLASS_NAME, 'btOptionCard')
                 )
             )
             print('answers located')
-            util.wait_random()
             answers = self.driver.find_elements_by_class_name('btOptionCard')
             print('picking answer from', len(answers))
-            util.wait_random()
             index = random.randint(0, 1)
             answers[index].click()
             util.wait_random()
 
-            questions_element = WebDriverWait(self.driver, const.WAIT_TIME).until(
-                EC.visibility_of_element_located(
-                    (By.XPATH, '//*[@id="currentQuestionContainer"]/div/div/div[2]/div[4]')
-                )
-            )
-            while question_count == questions_element.get_attribute('textContent'):
-                print('loading...')
-                util.wait(1)
-                questions_element = WebDriverWait(self.driver, const.WAIT_TIME).until(
+            try:
+                WebDriverWait(self.driver, const.WAIT_TIME).until(
                     EC.visibility_of_element_located(
                         (By.XPATH, '//*[@id="currentQuestionContainer"]/div/div/div[2]/div[4]')
                     )
                 )
-            question_count = questions_element.get_attribute('textContent')
+            except Exception as e:
+                print("quiz finished before getting elements")
 
     def supersonic_quiz(self):
         self.start_quiz()
 
+        print('starting quiz')
         WebDriverWait(self.driver, const.WAIT_TIME).until(
             EC.visibility_of_element_located(
                 (By.ID, 'rqHeaderCredits')
             ),"can't get questions"
         )
+
         question_count = self.driver.find_elements_by_css_selector('#rqHeaderCredits span.emptyCircle')
+        print('questions counted', (len(question_count) + 1))
+        answers = self.driver.find_elements_by_css_selector('div[id^="slideex"] > div > div.slide')
+        count = len(answers)
+        print(count, 'possible answers')
 
         for _ in range(len(question_count) + 1):
-            util.wait(4)
+            util.wait(1.5)
             print('starting question')
-            ss_score = WebDriverWait(self.driver, const.WAIT_TIME).until(
-                EC.visibility_of_element_located(
-                    (By.CSS_SELECTOR, '#currentQuestionContainer > div > div.rqQuestion > span > span')
-                )
-            )
-            score = str(ss_score.get_attribute('textContent'))
-            print(score)
-            div = score.split('/')
-            current = ''.join([i for i in div[0].split() if i.isdigit()])
-            total = ''.join([i for i in div[1].split() if i.isdigit()])
-            util.wait_random()
-            answers = self.driver.find_elements_by_css_selector('#slideexp1_7ECCF2 > div > div.slide')
+
+            answers, current, total = self.supersonic_quiz_grab_elements()
             index = 0
+            correct = 0
 
-            while int(current) != int(total):
-                answers[index].click()
-                index += 1
+            try:
+                while index < count and correct != int(total):
+                    print("clicking answer", index)
+                    answers[index].click()
+                    util.wait_random()
 
-                ss_score = WebDriverWait(self.driver, const.WAIT_TIME).until(
-                    EC.visibility_of_element_located(
-                        (By.CSS_SELECTOR, '#currentQuestionContainer > div > div.rqQuestion > span > span')
-                    )
-                )
-                score = str(ss_score.get_attribute('textContent'))
-                print(score)
-                div = score.split('/')
-                current = ''.join([i for i in div[0].split() if i.isdigit()])
-                total = ''.join([i for i in div[1].split() if i.isdigit()])
-                util.wait_random()
-                answers = self.driver.find_elements_by_css_selector('#slideexp1_7ECCF2 > div > div.slide')
+                    answers, current, total = self.supersonic_quiz_grab_elements()
+                    answer = answers[index].find_element_by_tag_name('div')
+                    print('correct?', answer.get_attribute('iscorrectoption'))
+                    if answer.get_attribute('iscorrectoption') == "True":
+                        correct += 1
+                    print("correct answers", correct)
+                    index += 1
+            except Exception as e:
+                print("quiz finished before getting elements")
+            print("question done....")
+
+    def supersonic_quiz_grab_elements(self):
+        ss_score = WebDriverWait(self.driver, const.WAIT_TIME).until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, '#currentQuestionContainer > div > div.rqQuestion > span > span')
+            )
+        )
+        score = str(ss_score.get_attribute('textContent'))
+        print(score)
+        div = score.split('/')
+        current = ''.join([i for i in div[0].split() if i.isdigit()])
+        total = ''.join([i for i in div[1].split() if i.isdigit()])
+        util.wait_random()
+        answers = self.driver.find_elements_by_css_selector('div[id^="slideex"] > div > div.slide')
+        print('getting answers', len(answers))
+        return answers, current, total
 
     def lightspeed_quiz(self):
         self.generic_quiz()
