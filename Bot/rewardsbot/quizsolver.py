@@ -65,7 +65,54 @@ class QuizSolver:
             )
             print('hint hidden')
 
+        self.close_quiz()
+
+    def test_your_smarts(self):
+        print("attempting 'test your smarts'")
+
+        answers = self.test_your_smarts_grab_answers()
+        answer_count = len(answers)
+
+        question_count = WebDriverWait(self.driver, const.WAIT_TIME).until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, 'div[class*="FooterText"]')
+            ), "could not get question count"
+        )
+        print(question_count.get_attribute('textContent'))
+        div = str(question_count.get_attribute('textContent')).split('of')
+        current = ''.join([i for i in div[0] if i.isdigit()])
+        total = ''.join([i for i in div[1] if i.isdigit()])
+        count = int(total) - int(current) + 1
+        print(current, total, count)
+        print("questions counted")
+
+        for _ in range(count):
+            print("preparing answer")
+            answers = self.test_your_smarts_grab_answers()
+            index = random.randint(0, answer_count-1)
+            answers[index].click()
+            print(len(answers), "answers")
+            util.wait_random()
+
+            submit_button = WebDriverWait(self.driver, const.WAIT_TIME).until(
+                EC.element_to_be_clickable(
+                    (By.CSS_SELECTOR, 'input[value="Next question"]')
+                ), "can't find submit button"
+            )
+            submit_button.click()
+            util.wait_random()
+
+    def test_your_smarts_grab_answers(self):
+        question_panel = WebDriverWait(self.driver, const.WAIT_TIME).until(
+            EC.visibility_of_element_located(
+                (By.ID, 'ListOfQuestionAndAnswerPanes')
+            ), "could not find question panel"
+        )
+        answers = question_panel.find_elements_by_css_selector('div[id*="QuestionPane"] > div.b_vPanel.b_loose > div:nth-child(2) > a')
+        return answers
+
     def this_or_that(self):
+        print("attempting 'this or that'")
         self.start_quiz()
 
         questions_element = WebDriverWait(self.driver, const.WAIT_TIME).until(
@@ -102,7 +149,10 @@ class QuizSolver:
             except Exception as e:
                 print("quiz finished before getting elements")
 
+        self.close_quiz()
+
     def supersonic_quiz(self):
+        print("attempting 'supersonic'")
         self.start_quiz()
 
         print('starting quiz')
@@ -143,6 +193,8 @@ class QuizSolver:
                 print("quiz finished before getting elements")
             print("question done....")
 
+        self.close_quiz()
+
     def supersonic_quiz_grab_elements(self):
         ss_score = WebDriverWait(self.driver, const.WAIT_TIME).until(
             EC.visibility_of_element_located(
@@ -160,12 +212,14 @@ class QuizSolver:
         return answers, current, total
 
     def lightspeed_quiz(self):
+        print("attempting 'lightspeed'")
         self.generic_quiz()
 
     def who_said_it(self):
         self.generic_quiz()
 
     def word_for_word(self):
+        print("attempting 'word for word'")
         self.start_quiz()
 
         index = 0
@@ -189,3 +243,25 @@ class QuizSolver:
             )
             print(hint.is_displayed(), hint.get_attribute('textContent'))
             condition = hint.is_displayed() and ('Oops, try again!' == hint.get_attribute('textContent').strip())
+
+        self.close_quiz()
+
+    def daily_poll(self):
+        print("attempting 'Daily poll'")
+
+        poll = WebDriverWait(self.driver, const.WAIT_TIME).until(
+            EC.visibility_of_element_located(
+                (By.ID, 'btPollOverlay')
+            ), "could not find poll"
+        )
+        print("poll ready")
+
+        options = WebDriverWait(poll, const.WAIT_TIME).until(
+            EC.visibility_of_all_elements_located(
+                (By.CSS_SELECTOR, 'div > div.btOptions2.bt_pollOptions > div')
+            ), "could not find options"
+        )
+        print(len(options), "options")
+        random.choice(options).click()
+        util.wait_random()
+        self.close_quiz()

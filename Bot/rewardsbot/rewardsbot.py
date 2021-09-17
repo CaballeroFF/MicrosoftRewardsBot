@@ -45,8 +45,7 @@ class RewardsBot(webdriver.Chrome):
     def do_daily_set(self):
         print('Attempting Daily set...')
         bot_daily_set = DailySet(self)
-        # bot_daily_set.daily_article()
-        # bot_daily_set.daily_quiz()
-        # bot_daily_set.daily_trivia()
-        bot_daily_set.test()
+        bot_daily_set.daily_article()
+        bot_daily_set.daily_quiz()
+        bot_daily_set.daily_trivia()
         print('Daily set complete.')

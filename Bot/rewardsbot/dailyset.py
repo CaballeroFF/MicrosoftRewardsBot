@@ -57,21 +57,21 @@ class DailySet:
 
     def quiz_type(self, title):
         if title == "This or That?":
-            print("this or that")
             self.quiz_solver.this_or_that()
         elif title == "Supersonic quiz":
-            print("supersonic")
             self.quiz_solver.supersonic_quiz()
         elif title == "Lightspeed quiz":
-            print("lightspeed")
             self.quiz_solver.lightspeed_quiz()
+        elif title == "Test your smarts":
+            self.quiz_solver.test_your_smarts()
 
     def trivia_type(self, title):
         if title == "Who said it":
             print("who said it")
         elif title == "Word for word":
-            print("word for word")
             self.quiz_solver.word_for_word()
+        elif title == "Daily poll":
+            self.quiz_solver.daily_poll()
 
     def daily_article(self):
         self.open_nth_promo(1)
@@ -87,8 +87,6 @@ class DailySet:
         except Exception as e:
             print('could not complete quiz', e)
 
-        self.quiz_solver.close_quiz()
-
     def daily_trivia(self):
         if self.complete:
             return None
@@ -99,8 +97,6 @@ class DailySet:
             self.trivia_type(title)
         except Exception as e:
             print('could not complete trivia', e)
-
-        self.quiz_solver.close_quiz()
 
     def test(self):
         self.driver.get('https://www.bing.com/search?q=Popular%20TV%20shows&rnoreward=1&mkt=EN-US&FORM=ML12JG&skipopalnative=true&rqpiodemo=1&filters=BTEPOKey:%22REWARDSQUIZ_ENUS_ThisorThat_TVshows_ReleaseDate_20210913%22%20BTROID:%22Gamification_DailySet_20210913_Child2%22%20BTROEC:%225%22%20BTROMC:%2250%22%20BTROQN:%224%22')
