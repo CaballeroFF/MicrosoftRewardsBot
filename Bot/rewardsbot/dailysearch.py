@@ -74,6 +74,7 @@ class DailySearch:
         util.wait_random()
 
         for _ in range(self.count):
+            util.wait(.5)
             util.wait_random()
             input_field = self.driver.find_element_by_css_selector('#sb_form_q')
             input_field.send_keys(util.random_letter())

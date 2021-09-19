@@ -42,7 +42,20 @@ class QuizSolver:
                 (By.ID, 'rqHeaderCredits')
             ),"can't get questions"
         )
-        question_count = self.driver.find_elements_by_css_selector('#rqHeaderCredits span.emptyCircle')
+        # question_count = self.driver.find_elements_by_css_selector('#rqHeaderCredits span.emptyCircle')
+        question_count = WebDriverWait(self.driver, const.WAIT_TIME).until(
+            EC.visibility_of_all_elements_located(
+                (By.CSS_SELECTOR, '#rqHeaderCredits span.emptyCircle')
+            ), "can't find questions"
+        )
+
+        answers = WebDriverWait(self.driver, const.WAIT_TIME).until(
+            EC.visibility_of_all_elements_located(
+                (By.CLASS_NAME, 'rq_button')
+            ), "can't find answers"
+        )
+        answer_count = len(answers)
+        print(answer_count, "answers")
 
         for _ in range(len(question_count) + 1):
             util.wait(1.5)
@@ -55,7 +68,8 @@ class QuizSolver:
             util.wait_random()
             answers = self.driver.find_elements_by_class_name('rq_button')
             print('clicking answer')
-            random.choice(answers).click()
+            index = random.randint(0, answer_count-1)
+            answers[index].click()
             util.wait_random()
 
             WebDriverWait(self.driver, const.WAIT_TIME).until(

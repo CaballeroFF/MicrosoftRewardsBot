@@ -1,4 +1,5 @@
 import rewardsbot.util as util
+import rewardsbot.constants as const
 
 from rewardsbot.quizsolver import QuizSolver
 from selenium.webdriver.remote.webdriver import WebDriver
@@ -62,7 +63,8 @@ class DailySet:
             self.quiz_solver.supersonic_quiz()
         elif title == "Lightspeed quiz":
             self.quiz_solver.lightspeed_quiz()
-        elif title == "Test your smarts":
+        else:
+            # title == "Test your smarts" "Show what you know"
             self.quiz_solver.test_your_smarts()
 
     def trivia_type(self, title):
@@ -98,7 +100,35 @@ class DailySet:
         except Exception as e:
             print('could not complete trivia', e)
 
+    def check_for_completion(self):
+        if not self.complete:
+            self.open_drawer()
+
+        try:
+            print('attempting to grab element')
+            WebDriverWait(self.driver, 5).until(
+                EC.frame_to_be_available_and_switch_to_it(
+                    (By.ID, 'bepfm')
+                )
+            )
+            WebDriverWait(self.driver, const.WAIT_TIME).until(
+                EC.visibility_of_element_located(
+                    (By.XPATH, '//*[@id="modern-flyout"]/div/div[3]/div[2]/div[1]/div[2]/div/div/div[2]')
+                ), "could not find complete hint"
+            )
+            days_to_go = WebDriverWait(self.driver, const.WAIT_TIME).until(
+                EC.visibility_of_element_located(
+                    (By.XPATH, '//*[@id="modern-flyout"]/div/div[3]/div[2]/div[1]/div[2]/div/div/p')
+                ), "could not complete text"
+            )
+            print(days_to_go.get_attribute('textContent'))
+            util.wait(2)
+            print("switching to default frame")
+            self.driver.switch_to.default_content()
+        except Exception as e:
+            print("daily set failed", e)
+
     def test(self):
-        self.driver.get('https://www.bing.com/search?q=Popular%20TV%20shows&rnoreward=1&mkt=EN-US&FORM=ML12JG&skipopalnative=true&rqpiodemo=1&filters=BTEPOKey:%22REWARDSQUIZ_ENUS_ThisorThat_TVshows_ReleaseDate_20210913%22%20BTROID:%22Gamification_DailySet_20210913_Child2%22%20BTROEC:%225%22%20BTROMC:%2250%22%20BTROQN:%224%22')
+        self.driver.get('https://www.bing.com/search?q=chicago&rnoreward=1&mkt=EN-US&FORM=ML12JG&skipopalnative=true&rqpiodemo=1&filters=BTEPOKey:%22REWARDSQUIZ_ENUS_MicrosoftRewardsQuizDS_PartPoints_20210915%22%20BTROID:%22Gamification_DailySet_20210915_Child2%22%20BTROEC:%220%22%20BTROMC:%2240%22%20BTROQN:%220%22')
         util.wait(3)
-        self.quiz_solver.this_or_that()
+        self.quiz_solver.lightspeed_quiz()

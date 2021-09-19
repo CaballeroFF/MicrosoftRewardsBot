@@ -48,4 +48,5 @@ class RewardsBot(webdriver.Chrome):
         bot_daily_set.daily_article()
         bot_daily_set.daily_quiz()
         bot_daily_set.daily_trivia()
+        bot_daily_set.check_for_completion()
         print('Daily set complete.')
