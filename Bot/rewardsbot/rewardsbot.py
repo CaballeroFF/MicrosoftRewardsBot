@@ -23,9 +23,6 @@ class RewardsBot(webdriver.Chrome):
     def landing_page(self):
         self.get(const.BASE_URL)
 
-    def test(self):
-        self.get('https://www.bing.com/search?q=nora%20ephron%20movies&rnoreward=1&mkt=EN-US&FORM=ML12JG&skipopalnative=true&rqpiodemo=1&filters=BTEPOKey:%22REWARDSQUIZ_ENUS_MicrosoftRewardsQuizCB_20210914%22%20BTROID:%22Gamification_DailySet_20210914_Child2%22%20BTROEC:%220%22%20BTROMC:%2230%22')
-
     def sign_in(self, account):
         print('Signing in...')
         bot_sign_in = SignIn(self)

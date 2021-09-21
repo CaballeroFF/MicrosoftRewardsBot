@@ -42,7 +42,7 @@ class QuizSolver:
                 (By.ID, 'rqHeaderCredits')
             ),"can't get questions"
         )
-        # question_count = self.driver.find_elements_by_css_selector('#rqHeaderCredits span.emptyCircle')
+
         question_count = WebDriverWait(self.driver, const.WAIT_TIME).until(
             EC.visibility_of_all_elements_located(
                 (By.CSS_SELECTOR, '#rqHeaderCredits span.emptyCircle')
@@ -230,6 +230,7 @@ class QuizSolver:
         self.generic_quiz()
 
     def who_said_it(self):
+        print("attempting 'who said it'")
         self.generic_quiz()
 
     def word_for_word(self):
