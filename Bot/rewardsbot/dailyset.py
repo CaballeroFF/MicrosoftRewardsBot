@@ -68,10 +68,8 @@ class DailySet:
             self.quiz_solver.test_your_smarts()
 
     def trivia_type(self, title):
-        if title == "Who said it":
-            print("who said it")
-        elif title == "Word for word" or title == "True or false":
-            self.quiz_solver.word_for_word()
+        if title == "Word for word" or title == "True or false" or title == "Who said it?":
+            self.quiz_solver.two_answer_quiz()
         elif title == "Daily poll" or title == "Hot takes":
             self.quiz_solver.daily_poll()
 

@@ -34,53 +34,6 @@ class QuizSolver:
         except Exception as e:
             print('could not close quiz', e)
 
-    def generic_quiz(self):
-        self.start_quiz()
-
-        WebDriverWait(self.driver, const.WAIT_TIME).until(
-            EC.visibility_of_element_located(
-                (By.ID, 'rqHeaderCredits')
-            ),"can't get questions"
-        )
-
-        question_count = WebDriverWait(self.driver, const.WAIT_TIME).until(
-            EC.visibility_of_all_elements_located(
-                (By.CSS_SELECTOR, '#rqHeaderCredits span.emptyCircle')
-            ), "can't find questions"
-        )
-
-        answers = WebDriverWait(self.driver, const.WAIT_TIME).until(
-            EC.visibility_of_all_elements_located(
-                (By.CLASS_NAME, 'rq_button')
-            ), "can't find answers"
-        )
-        answer_count = len(answers)
-        print(answer_count, "answers")
-
-        for _ in range(len(question_count) + 1):
-            util.wait(1.5)
-            print('starting question')
-            WebDriverWait(self.driver, const.WAIT_TIME).until(
-                EC.visibility_of_element_located(
-                    (By.ID, 'currentQuestionContainer')
-                ), "can't get answers"
-            )
-            util.wait_random()
-            answers = self.driver.find_elements_by_class_name('rq_button')
-            print('clicking answer')
-            index = random.randint(0, answer_count-1)
-            answers[index].click()
-            util.wait_random()
-
-            WebDriverWait(self.driver, const.WAIT_TIME).until(
-                EC.invisibility_of_element_located(
-                    (By.ID, 'rqAnsStatus')
-                ), "hint not found"
-            )
-            print('hint hidden')
-
-        self.close_quiz()
-
     def test_your_smarts(self):
         print("attempting 'test your smarts'")
 
@@ -227,13 +180,53 @@ class QuizSolver:
 
     def lightspeed_quiz(self):
         print("attempting 'lightspeed'")
-        self.generic_quiz()
+        self.start_quiz()
 
-    def who_said_it(self):
-        print("attempting 'who said it'")
-        self.generic_quiz()
+        WebDriverWait(self.driver, const.WAIT_TIME).until(
+            EC.visibility_of_element_located(
+                (By.ID, 'rqHeaderCredits')
+            ),"can't get questions"
+        )
 
-    def word_for_word(self):
+        question_count = WebDriverWait(self.driver, const.WAIT_TIME).until(
+            EC.visibility_of_all_elements_located(
+                (By.CSS_SELECTOR, '#rqHeaderCredits span.emptyCircle')
+            ), "can't find questions"
+        )
+
+        answers = WebDriverWait(self.driver, const.WAIT_TIME).until(
+            EC.visibility_of_all_elements_located(
+                (By.CLASS_NAME, 'rq_button')
+            ), "can't find answers"
+        )
+        answer_count = len(answers)
+        print(answer_count, "answers")
+
+        for _ in range(len(question_count) + 1):
+            util.wait(1.5)
+            print('starting question')
+            WebDriverWait(self.driver, const.WAIT_TIME).until(
+                EC.visibility_of_element_located(
+                    (By.ID, 'currentQuestionContainer')
+                ), "can't get answers"
+            )
+            util.wait_random()
+            answers = self.driver.find_elements_by_class_name('rq_button')
+            print('clicking answer')
+            index = random.randint(0, answer_count-1)
+            answers[index].click()
+            util.wait_random()
+
+            WebDriverWait(self.driver, const.WAIT_TIME).until(
+                EC.invisibility_of_element_located(
+                    (By.ID, 'rqAnsStatus')
+                ), "hint not found"
+            )
+            print('hint hidden')
+
+        self.close_quiz()
+
+    def two_answer_quiz(self):
         print("attempting 'word for word'")
         self.start_quiz()
 
